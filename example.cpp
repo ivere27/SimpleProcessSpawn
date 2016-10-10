@@ -1,11 +1,3 @@
-# SimpleProcessSpawn
-
-* c++11 process spawn based on libuv(uv_spawn wrapper)
-* a single header file
-
-
-## Usage
-```cpp
 #include <iostream>
 #include "SimpleProcessSpawn.hpp"
 
@@ -14,11 +6,13 @@ using namespace spawn;
 
 int main() {
   uv_loop_t* uv_loop = uv_default_loop();
-  char* args[2];
+  char* args[3];
   args[0] = (char*)"./child";
-  args[1] = NULL;
+  args[1] = (char*)"200";
+  args[2] = NULL;
 
   SimpleProcessSpawn process(uv_loop, args);
+  process.timeout = 100;
   process.on("error", [](Error &&error){
     cout << error.name << endl;
     cout << error.message << endl;
@@ -33,13 +27,3 @@ int main() {
 
   return uv_run(uv_loop, UV_RUN_DEFAULT);
 }
-```
-
-
-## about
-* `This is experimental yet. use at your own purpose!`
-* a project of 'Second Compiler'.
-
-# License
-
-MIT
