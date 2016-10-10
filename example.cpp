@@ -12,7 +12,7 @@ int main() {
   args[2] = NULL;
 
   SimpleProcessSpawn process(uv_loop, args);
-  process.timeout = 100;
+  process.timeout = 1000;
   process.on("error", [](Error &&error){
     cout << error.name << endl;
     cout << error.message << endl;
