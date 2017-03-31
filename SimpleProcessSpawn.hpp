@@ -77,7 +77,8 @@ public:
 
     options.exit_cb = [](uv_process_t *req, int64_t exit_status, int term_signal) {
       SimpleProcessSpawn *child = (SimpleProcessSpawn*)req->data;
-      child->_clearTimer();
+      if (child->timer.loop == child->uv_loop) // which is initialized
+        child->_clearTimer();
 
       child->response.exitStatus = exit_status;
       child->response.termSignal = term_signal;
@@ -132,18 +133,20 @@ public:
   void spawn() {
     int r;
 
-    r = uv_timer_init(uv_loop, &timer);
-    ASSERT(r == 0);
-    r = uv_timer_start(&timer, [](uv_timer_t* timer){
-      SimpleProcessSpawn *child = (SimpleProcessSpawn*)timer->data;
-      child->_clearTimer();
+    if (timeout > 0) {
+      r = uv_timer_init(uv_loop, &timer);
+      ASSERT(r == 0);
+      r = uv_timer_start(&timer, [](uv_timer_t* timer){
+        SimpleProcessSpawn *child = (SimpleProcessSpawn*)timer->data;
+        child->_clearTimer();
 
-      uv_process_kill(&child->process, SIGKILL);
+        uv_process_kill(&child->process, SIGKILL);
 
-      int _err = -ETIMEDOUT;
-      child->emit("error", uv_err_name(_err), uv_strerror(_err));
-    }, timeout, 0);
-    ASSERT(r == 0);
+        int _err = -ETIMEDOUT;
+        child->emit("error", uv_err_name(_err), uv_strerror(_err));
+      }, timeout, 0);
+      ASSERT(r == 0);
+    }
 
     r = uv_spawn(uv_loop, &process, &options);
     if (r != 0) {
@@ -183,7 +186,7 @@ public:
   }
 
   Response response;
-  unsigned int timeout = 60*2*1000; // 2minutes default
+  unsigned int timeout = 0; // forever in defaults
 private:
   uv_loop_t* uv_loop;
   uv_process_t process;
