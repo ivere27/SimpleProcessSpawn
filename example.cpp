@@ -20,8 +20,8 @@ int main() {
   .on("response", [](Response &&response){
     cout << "exit code : " << response.exitStatus << endl;
     cout << "signal : " << response.termSignal << endl;
-    cout << response.stdout.str();
-    cout << response.stderr.str();
+    cout << response.out.str();
+    cout << response.err.str();
   })
   .spawn();
 
