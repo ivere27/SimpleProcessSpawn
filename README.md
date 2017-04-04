@@ -35,6 +35,11 @@ int main() {
 }
 ```
 
+## build or $ make
+```bash
+g++ --std=c++11 child.cpp -o child && ./child 1000
+g++ example.cpp --std=c++11 -I./libuv/include/ ./libuv/.libs/libuv.a -lpthread -o example && ./example
+```
 
 ## about
 * `This is experimental yet. use at your own purpose!`
