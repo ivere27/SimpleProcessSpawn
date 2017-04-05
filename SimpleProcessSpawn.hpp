@@ -40,7 +40,7 @@ static uv_alloc_cb uvAllocCb = [](uv_handle_t* handle, size_t size, uv_buf_t* bu
 class Error {
 public:
   Error(){};
-  Error(string name, string message) : name(name), message(message) {};
+  Error(const char* name, const char* message) : name(name), message(message) {};
   string name;
   string message;
 };
