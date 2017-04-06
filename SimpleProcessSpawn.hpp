@@ -50,8 +50,8 @@ class Response {
 public:
   int64_t exitStatus;
   int termSignal;
-  stringstream out;
-  stringstream err;
+  stringstream stdout;
+  stringstream stderr;
 };
 
 class SimpleProcessSpawn {
@@ -158,7 +158,7 @@ public:
     r = uv_read_start((uv_stream_t*) &pipeOut, uvAllocCb, [](uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
       SimpleProcessSpawn *child = (SimpleProcessSpawn*)stream->data;
       if (nread > 0) {
-        child->response.out.rdbuf()->sputn(buf->base, nread);
+        child->response.stdout.rdbuf()->sputn(buf->base, nread);
       } else if (nread < 0) {
         assert(nread == UV_EOF);
       }
@@ -173,7 +173,7 @@ public:
     r = uv_read_start((uv_stream_t*) &pipeErr, uvAllocCb, [](uv_stream_t* stream, ssize_t nread, const uv_buf_t* buf) {
       SimpleProcessSpawn *child = (SimpleProcessSpawn*)stream->data;
       if (nread > 0) {
-        child->response.err.rdbuf()->sputn(buf->base, nread);
+        child->response.stderr.rdbuf()->sputn(buf->base, nread);
       } else if (nread < 0) {
         assert(nread == UV_EOF);
       }
